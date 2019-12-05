@@ -1,0 +1,59 @@
+// Learn cc.Class:
+//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/class.html
+//  - [English] http://docs.cocos2d-x.org/creator/manual/en/scripting/class.html
+// Learn Attribute:
+//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
+//  - [English] http://docs.cocos2d-x.org/creator/manual/en/scripting/reference/attributes.html
+// Learn life-cycle callbacks:
+//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
+//  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+
+cc.Class({
+  extends: cc.Component,
+
+  properties: {
+    tiles_instance: {
+      default: null,
+      type: cc.Node
+    },
+    player: {
+      default: null,
+      type: cc.Node
+    },
+    conformNode: {
+      default: null,
+      type: cc.Node
+    },
+    button: {
+      default: null,
+      type: cc.Button
+    }
+  },
+
+  // LIFE-CYCLE CALLBACKS:
+
+  onLoad() {
+    this.i = 0
+    this.tilesThisX = this.conformNode.convertToWorldSpaceAR(this.tiles_instance.position.add(cc.v2(this.tiles_instance.children[0].width * this.tiles_instance.scale, 0)))
+  },
+
+  start() {
+    this.player.getComponent('player').init(this.node, this.tiles_instance)
+  },
+
+  // update (dt) {},
+
+  onBtnStart() {
+    this.button.interactable = false
+    var tiles = this.tiles_instance.children
+    var distance = (tiles[0].x - tiles[9].x) * this.tiles_instance.scale
+    this.conformNode.runAction(cc.moveTo(0.4, this.conformNode.x + distance, this.conformNode.y))
+    setTimeout(() => this.button.interactable = true, 400)
+    this.i++
+    console.log(this.tilesThisX)
+    if (this.i > 7) {
+      this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX)
+      this.i = 1
+    }
+  }
+});
