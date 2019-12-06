@@ -33,27 +33,33 @@ cc.Class({
   // LIFE-CYCLE CALLBACKS:
 
   onLoad() {
-    this.i = 0
-    this.tilesThisX = this.conformNode.convertToWorldSpaceAR(this.tiles_instance.position.add(cc.v2(this.tiles_instance.children[0].width * this.tiles_instance.scale, 0)))
+    // this.i = 0
+    this.tilesThisX = this.conformNode.convertToWorldSpaceAR(this.tiles_instance.position)
+    this.anchor = this.tiles_instance.convertToWorldSpaceAR(this.tiles_instance.children[0].position)
   },
 
   start() {
-    this.player.getComponent('player').init(this.node, this.tiles_instance)
   },
 
   // update (dt) {},
 
   onBtnStart() {
+    var n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2 > 0 ? 3 : 4)))
+    this.player.getComponent('player').updateN(n, false)
+
+    var step = this.player.getComponent('player').step
+    this.player.getComponent('player').updateStep(true)
+
     this.button.interactable = false
     var tiles = this.tiles_instance.children
-    var distance = (tiles[0].x - tiles[9].x) * this.tiles_instance.scale
+    var distance = (tiles[0].x - tiles[step].x) * this.tiles_instance.scale
     this.conformNode.runAction(cc.moveTo(0.4, this.conformNode.x + distance, this.conformNode.y))
-    setTimeout(() => this.button.interactable = true, 400)
-    this.i++
-    console.log(this.tilesThisX)
-    if (this.i > 7) {
-      this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX)
-      this.i = 1
-    }
+    setTimeout(() => {
+      this.button.interactable = true
+      if (this.tiles_instance.convertToWorldSpaceAR(this.tiles_instance.children[64].position).x - this.anchor.x < 0) {
+        var pitch = Math.round(((this.tiles_instance.convertToWorldSpaceAR(this.tiles_instance.children[64].position).x - this.anchor.x) / (this.tiles_instance.children[0].width * this.tiles_instance.scale)))
+        this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX).add(cc.v2(this.tiles_instance.children[0].width * this.tiles_instance.scale * pitch, 0))
+      }
+    }, 400)
   }
 });
