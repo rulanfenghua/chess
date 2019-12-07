@@ -29,18 +29,27 @@ cc.Class({
     this.originX = this.node.x
     this.stepTile = 0
     this.step = 0
+    this.tileTo = null
+    this.posTo = cc.v2(0, 0)
 
     var n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2 > 0 ? 3 : 4)))
     this.updateN(n, true)
   },
 
   start() {
-    this.node.on('touchmove', (event) => {
-      this.move(event)
-    }, this)
+    this.node.on('touchmove', this.move, this)
     this.node.on('touchstart', () => {
       this.on = true
       this.originX = this.node.x
+
+      var tiles = this.tiles_instance.children
+      var min = this._minTile()
+      if (min < this.stepTile) {
+        var tileTo = tiles[min + 1]
+      } else {
+        tileTo = tiles[min]
+      }
+      this.posTo = this.conformNode.convertToNodeSpaceAR(this.tiles_instance.convertToWorldSpaceAR(tileTo.position))
     })
     this.node.on('touchend', () => {
       this.moveEnd()
@@ -54,15 +63,16 @@ cc.Class({
 
   },
 
-  updateN(n, isFirst) {
+  updateN(n, isFirst) { // 更新随机向前的量
     if (isFirst) {
       this.stepTile = this._minTile() + n
     } else {
-      this.stepTile = this._minTile() + 1 + n
+      this.stepTile = this._minTile() + n
     }
+    console.log('min', this._minTile())
     console.log('n', n)
   },
-  updateStep(reset) {
+  updateStep(reset) { // 更新记录向前移动
     if (reset) {
       this.step = 0
     } else {
@@ -86,25 +96,14 @@ cc.Class({
     return min
   },
 
-  move(event) { // todo 放在update里
+  move(event) {
     var delta = event.getDelta()
-    var tiles = this.tiles_instance.children
-
-    // this.node.stopAllActions()
-    if (this.on) {
-      this.node.x += delta.x
-
-      var min = this._minTile()
-      if (min < this.stepTile) {
-        var tileTo = tiles[min + 1]
-      } else {
-        tileTo = tiles[min]
-      }
-      var posTo = this.conformNode.convertToNodeSpaceAR(this.tiles_instance.convertToWorldSpaceAR(tileTo.position))
-      if (this.node.x - posTo.x > tileTo.width / 9 * this.tiles_instance.scale || this.node.x - this.originX < -tileTo.width / 9 * this.tiles_instance.scale) {
-        this.on = false
-        this.node.stopAllActions()
-      }
+    this.node.x = this.node.x + delta.x
+    
+    if (this.node.x - this.posTo.x > this.tiles_instance.children[0].width / 9 * this.tiles_instance.scale) {
+      this.node.x = this.posTo.x + this.tiles_instance.children[0].width / 9 * this.tiles_instance.scale
+    } else if (this.node.x - this.originX < -this.tiles_instance.children[0].width / 9 * this.tiles_instance.scale) {
+      this.node.x = this.originX - this.tiles_instance.children[0].width / 9 * this.tiles_instance.scale
     }
   },
   moveEnd() {
