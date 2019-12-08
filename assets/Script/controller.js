@@ -57,10 +57,13 @@ cc.Class({
     this.conformNode.runAction(cc.moveTo(0.4, this.conformNode.x + distance, this.conformNode.y))
     setTimeout(() => {
       this.button.interactable = true
-      if (this.tiles_instance.convertToWorldSpaceAR(this.tiles_instance.children[64].position).x - this.anchor.x < 0) {
-        var pitch = Math.round(((this.tiles_instance.convertToWorldSpaceAR(this.tiles_instance.children[64].position).x - this.anchor.x) / (this.tiles_instance.children[0].width * this.tiles_instance.scale)))
-        this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX).add(cc.v2(this.tiles_instance.children[0].width * this.tiles_instance.scale * pitch, 0))
+      if (this.tiles_instance.convertToWorldSpaceAR(this.tiles_instance.children[65].position).x - this.anchor.x < 0) {
+        var pitch = Math.round(((this.tiles_instance.convertToWorldSpaceAR(this.tiles_instance.children[65].position).x - this.anchor.x) / (this.tiles_instance.children[0].width * this.tiles_instance.scale)))
+        var subPos = (tiles[60].x - tiles[59 + pitch].x) * this.tiles_instance.scale
+        this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX).sub(cc.v2(subPos, 0))
       }
-    }, 400)
+    }, 700)
+
+    // todo 显示tile五行数量
   }
 });

@@ -28,6 +28,8 @@ cc.Class({
     this.originX = this.node.x
     this.n = 0
     this.step = 0
+    this.stepAll = 0
+    this.posTo = cc.v2(0, 0)
 
     var n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2) > 0 ? 3 : 4))
     this.updateN(n)
@@ -68,6 +70,7 @@ cc.Class({
       this.step = 0
     } else {
       this.step++
+      this.stepAll++
     }
   },
 
