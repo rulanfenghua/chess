@@ -44,8 +44,9 @@ cc.Class({
   // update (dt) {},
 
   onBtnStart() {
-    var n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2 > 0 ? 3 : 4)))
-    this.player.getComponent('player').updateN(n, false)
+    var n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2) > 0 ? 3 : 4))
+    console.log('n', n)
+    this.player.getComponent('player').updateN(n)
 
     var step = this.player.getComponent('player').step
     this.player.getComponent('player').updateStep(true)

@@ -25,15 +25,12 @@ cc.Class({
   // LIFE-CYCLE CALLBACKS:
 
   onLoad() {
-    this.on = false
     this.originX = this.node.x
-    this.stepTile = 0
+    this.n = 0
     this.step = 0
-    this.tileTo = null
-    this.posTo = cc.v2(0, 0)
 
-    var n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2 > 0 ? 3 : 4)))
-    this.updateN(n, true)
+    var n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2) > 0 ? 3 : 4))
+    this.updateN(n)
   },
 
   start() {
@@ -44,7 +41,7 @@ cc.Class({
 
       var tiles = this.tiles_instance.children
       var min = this._minTile()
-      if (min < this.stepTile) {
+      if (this.n > 0) {
         var tileTo = tiles[min + 1]
       } else {
         tileTo = tiles[min]
@@ -63,14 +60,8 @@ cc.Class({
 
   },
 
-  updateN(n, isFirst) { // 更新随机向前的量
-    if (isFirst) {
-      this.stepTile = this._minTile() + n
-    } else {
-      this.stepTile = this._minTile() + n
-    }
-    console.log('min', this._minTile())
-    console.log('n', n)
+  updateN(n) { // 更新随机向前的量
+    this.n = n
   },
   updateStep(reset) { // 更新记录向前移动
     if (reset) {
@@ -119,6 +110,7 @@ cc.Class({
         this.node.runAction(cc.moveTo(0.4, pos.x, this.node.y))
         if (tile != tiles[min]) {
           this.updateStep(false)
+          this.updateN(--this.n)
         }
       }
       return some
