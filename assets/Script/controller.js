@@ -33,7 +33,6 @@ cc.Class({
   // LIFE-CYCLE CALLBACKS:
 
   onLoad() {
-    // this.i = 0
     this.tilesThisX = this.conformNode.convertToWorldSpaceAR(this.tiles_instance.position)
     this.anchor = this.tiles_instance.convertToWorldSpaceAR(this.tiles_instance.children[0].position)
   },
@@ -64,6 +63,10 @@ cc.Class({
       }
     }, 700)
 
-    // todo 显示tile五行数量
+    var id = this.player.getComponent('player').stepAll % 64
+    var value = this.tiles_instance.children[id].getComponent('spaceTemplate').init()
+    console.log('value', value)
   }
 });
+
+// todo 全局五行
