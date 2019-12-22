@@ -68,5 +68,3 @@ cc.Class({
     console.log('value', value)
   }
 });
-
-// todo 全局五行
