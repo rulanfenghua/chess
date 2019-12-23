@@ -9,18 +9,27 @@ module.exports = function(dose) {
     deviator = calculate(elements, _max(elements))
   } else {
     var elements = database.elements
-    var deviator1 = calculate(elements, _max(elements))
+    var maxIndex = _max(elements)
+    var deviator1 = calculate(elements, maxIndex)
 
     var maxIndexThis = _addTo(dose, elements)
     database.elements = elements
     var deviator2 = calculate(elements, maxIndexThis)
-    deviator = deviator2 + deviator1
+    var power = (maxIndex - maxIndexThis) >= 0 ? (maxIndex - maxIndexThis) : 5 + (maxIndex - maxIndexThis)
+    var factor = Math.pow(0.56, power)
+    deviator = deviator2 + deviator1 * factor
   }
 
   function calculate(elements, maxIndex) {
     return (elements[maxIndex] + elements[(maxIndex + 1) % 5]) - (elements[(maxIndex + 2) % 5] + elements[(maxIndex + 3) % 5] + elements[(maxIndex + 4) % 5])
   }
 
+  function truncate(num) {
+    var numString = num.toString()
+    parseInt(numString.slice(-4))
+    parseInt(numString.slice(-8, -4))
+    
+  }
   function _addTo(dose, elements) {
     var index
     for (const key in dose) {
