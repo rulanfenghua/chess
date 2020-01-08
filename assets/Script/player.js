@@ -31,8 +31,9 @@ cc.Class({
     this.stepAll = 0
     this.posTo = cc.v2(0, 0)
 
-    var n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2) > 0 ? 3 : 4))
-    this.updateN(n)
+    this.updateN()
+    this.tilesThisX = this.conformNode.convertToWorldSpaceAR(this.tiles_instance.position)
+    this.anchor = this.tiles_instance.convertToWorldSpaceAR(this.tiles_instance.children[0].position)
   },
 
   start() {
@@ -44,7 +45,7 @@ cc.Class({
       var tiles = this.tiles_instance.children
       var min = this._minTile()
       if (this.n > 0) {
-        var tileTo = tiles[min + 1]
+        var tileTo = tiles[min + this.n]
       } else {
         tileTo = tiles[min]
       }
@@ -62,16 +63,13 @@ cc.Class({
 
   },
 
-  updateN(n) { // 更新随机向前的量
-    this.n = n
+  updateN() { // 更新随机向前的量
+    this.n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2) > 0 ? 3 : 4))
+    console.log('n', this.n)
   },
-  updateStep(reset) { // 更新记录向前移动
-    if (reset) {
-      this.step = 0
-    } else {
-      this.step++
-      this.stepAll++
-    }
+  updateStep(n) { // 更新记录向前移动
+    this.stepAll += n
+    console.log('stepAll', this.stepAll)
   },
 
   _minTile() {
@@ -92,7 +90,9 @@ cc.Class({
 
   move(event) {
     var delta = event.getDelta()
-    this.node.x = this.node.x + delta.x
+    if (delta.x > 0) {
+      this.node.x = this.node.x + delta.x
+    }
     
     if (this.node.x - this.posTo.x > this.tiles_instance.children[0].width / 9 * this.tiles_instance.scale) {
       this.node.x = this.posTo.x + this.tiles_instance.children[0].width / 9 * this.tiles_instance.scale
@@ -105,21 +105,30 @@ cc.Class({
 
     this.node.stopAllActions()
     var min = this._minTile()
-    var some = tiles.some(tile => {
+    var some = tiles.find(tile => {
       var pos = this.conformNode.convertToNodeSpaceAR(this.tiles_instance.convertToWorldSpaceAR(tile.position))
       var width = tile.width / 2 * this.tiles_instance.scale // 回弹距离
       var some = Math.abs(pos.x - this.node.x) < width
       if (some) {
         this.node.runAction(cc.moveTo(0.4, pos.x, this.node.y))
-        if (tile != tiles[min]) {
-          this.updateStep(false)
-          this.updateN(--this.n)
-        }
       }
       return some
     })
-    if (!some) {
-      this.node.runAction(cc.moveTo(0.4, this.originX, this.node.y))
+    if (tiles.indexOf(some) != min) {
+      this.updateStep(tiles.indexOf(some) - min)
+      this.updateN()
+      var distance = (tiles[min].x - some.x) * this.tiles_instance.scale
+      this.conformNode.runAction(cc.moveTo(0.4, this.conformNode.x + distance, this.conformNode.y))
+
+      if (this.tiles_instance.convertToWorldSpaceAR(tiles[65].position).x - this.anchor.x < 0) {
+        var pitch = Math.round(((this.tiles_instance.convertToWorldSpaceAR(tiles[65].position).x - this.anchor.x) / (tiles[0].width * this.tiles_instance.scale)))
+        var subPos = (tiles[60].x - tiles[59 + pitch].x) * this.tiles_instance.scale
+        this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX).sub(cc.v2(subPos, 0))
+      }
+
+      var id = this.stepAll % 64
+      var value = tiles[id].getComponent('spaceTemplate').init()
+      console.log('value', value)
     }
   }
 });
