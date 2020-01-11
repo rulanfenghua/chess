@@ -1,12 +1,4 @@
-// Learn cc.Class:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/class.html
-//  - [English] http://docs.cocos2d-x.org/creator/manual/en/scripting/class.html
-// Learn Attribute:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://docs.cocos2d-x.org/creator/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+import mainCore from 'mainCore';
 
 cc.Class({
   extends: cc.Component,
@@ -126,9 +118,9 @@ cc.Class({
         this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX).sub(cc.v2(subPos, 0))
       }
 
-      var id = this.stepAll % 64
+      var id = this.stepAll % 64 == 0 ? 1 : this.stepAll % 64
       var value = tiles[id].getComponent('spaceTemplate').init()
-      console.log('value', value)
+      mainCore(value)
     }
   }
 });
