@@ -1,4 +1,4 @@
-import mainCore from 'mainCore';
+import {parserS, parserT} from 'mainCore';
 
 cc.Class({
   extends: cc.Component,
@@ -20,7 +20,7 @@ cc.Class({
     this.originX = this.node.x
     this.n = 0
     this.step = 0
-    this.stepAll = 0
+    this.stepAll = parseInt(cc.sys.localStorage.getItem('stepAll')) ? parseInt(cc.sys.localStorage.getItem('stepAll')) : 0
     this.posTo = cc.v2(0, 0)
 
     this.updateN()
@@ -29,6 +29,13 @@ cc.Class({
   },
 
   start() {
+    var id = parseInt(cc.sys.localStorage.getItem('id'))
+    var tiles = this.tiles_instance.children
+    if (id) {
+      var subPos = this.tiles_instance.convertToWorldSpaceAR(tiles[id].position).x - this.anchor.x
+      this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX).sub(cc.v2(subPos, 0))
+    }
+
     this.node.on('touchmove', this.move, this)
     this.node.on('touchstart', () => {
       this.on = true
@@ -57,11 +64,9 @@ cc.Class({
 
   updateN() { // 更新随机向前的量
     this.n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2) > 0 ? 3 : 4))
-    console.log('n', this.n)
   },
   updateStep(n) { // 更新记录向前移动
     this.stepAll += n
-    console.log('stepAll', this.stepAll)
   },
 
   _minTile() {
@@ -118,9 +123,11 @@ cc.Class({
         this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX).sub(cc.v2(subPos, 0))
       }
 
-      var id = this.stepAll % 64 == 0 ? 1 : this.stepAll % 64
+      var id = this.stepAll % 64 == 0 && this.stepAll > 0 ? 64 : this.stepAll % 64
+      cc.sys.localStorage.setItem('id', id)
+      cc.sys.localStorage.setItem('stepAll', this.stepAll)
       var value = tiles[id].getComponent('spaceTemplate').init()
-      mainCore(value)
+      parserS(value)
     }
   }
 });

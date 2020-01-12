@@ -1,4 +1,4 @@
-import mainCore from 'mainCore';
+import {parserS, parserT} from 'mainCore';
 
 cc.Class({
   extends: cc.Component,
@@ -21,7 +21,7 @@ cc.Class({
   // LIFE-CYCLE CALLBACKS:
 
   onLoad() {
-    mainCore()
+    parserS()
   },
 
   start() {

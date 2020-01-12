@@ -1,14 +1,18 @@
-export default function(dose) {
+import sections from 'DataBase/sections'
+import traits from 'DataBase/traits'
+
+function parserS(dose) {
   var deviator
-  var elementD
+  var elements
 
   if (!dose) {
-    var elements = [0, 0, 0, 0, 0]
-    cc.sys.localStorage.setItem('elements', JSON.stringify({ data: elements })) // todo 初始五行and五行具体运算() 金，水，木，火，土
-    truncate(Date.now())
-
+    if (!JSON.parse(cc.sys.localStorage.getItem('elements'))) {
+      elements = truncate(Date.now())
+      cc.sys.localStorage.setItem('elements', JSON.stringify({ data: elements }))
+    } else {
+      elements = JSON.parse(cc.sys.localStorage.getItem('elements')).data
+    }
     deviator = calculate(elements, _max(elements))
-    elementD = [_max(elements), deviator]
   } else {
     elements = JSON.parse(cc.sys.localStorage.getItem('elements')).data
     var maxIndex = _max(elements)
@@ -20,39 +24,70 @@ export default function(dose) {
     var power = (maxIndex - maxIndexThis) >= 0 ? (maxIndex - maxIndexThis) : 5 + (maxIndex - maxIndexThis)
     var factor = Math.pow(0.56, power)
     deviator = deviator2 + deviator1 * factor
-    elementD = [maxIndexThis, deviator]
-  }
+    var ratioD = deviator / ((elements[0] + elements[1] + elements[2] + elements[3] + elements[4]) / 5)
+    var age = Math.floor(parseInt(cc.sys.localStorage.getItem('stepAll')) / 64)
 
-  function calculate(elements, maxIndex) {
-    return (elements[maxIndex] + elements[(maxIndex + 1) % 5]) - (elements[(maxIndex + 2) % 5] + elements[(maxIndex + 3) % 5] + elements[(maxIndex + 4) % 5])
-  }
 
-  function truncate(num) {
-    console.log(num)
-    var numString = num.toString()
-    parseInt(numString.slice(-1))
-    parseInt(numString.slice(-3, -1))
-    parseInt(numString.slice(-4, -2))
-    parseInt(numString.slice(-5, -3))
-    parseInt(numString.slice(-6, -4))
-    
-  }
-  function _addTo(dose, elements) {
-    elements[dose[0]] += dose[1]
-    return dose[0]
-  }
-  function _max(elements) {
-    var max = elements[0]
-    var maxIndex = 0
-    for (var i = 1; i < elements.length; i++) {
-      if (elements[i] > max) {
-        max = elements[i]
-        maxIndex = i
+    for (let section in sections) {
+      var sectionP = section.split(',')
+      var minP = parseFloat(sectionP[1])
+      var maxP = parseFloat(sectionP[2])
+      if (age == parseInt(sectionP[0].slice(0, 2)) && maxIndexThis == parseInt(sectionP[0].slice(-1))) {
+        if (ratioD >= minP && ratioD < maxP) {
+          switch (sections.section[0]) {
+            case 0:
+              return [sections.section[1], sections.section.slice(2)]
+          
+            default:
+              break;
+          }
+        }
       }
     }
-    return maxIndex
   }
-  console.log('elementD', elementD)
-  console.log('elements', JSON.parse(cc.sys.localStorage.getItem('elements')).data)
-  return elementD
 }
+
+function parserT(params) {
+  
+}
+
+function calculate(elements, maxIndex) {
+  return (elements[maxIndex] + elements[(maxIndex + 1) % 5]) - (elements[(maxIndex + 2) % 5] + elements[(maxIndex + 3) % 5] + elements[(maxIndex + 4) % 5])
+}
+
+function truncate(num) {
+  var numString = num.toString()
+
+  var randomEs = []
+  randomEs.push(parseInt(numString.slice(-1)))
+  randomEs.push(parseInt(numString.slice(-2, -1)))
+  randomEs.push(parseInt(numString.slice(-3, -2)))
+  randomEs.push(parseInt(numString.slice(-4, -3)))
+  randomEs.push(parseInt(numString.slice(-5, -4)))
+  console.log(numString)
+  console.log(randomEs)
+
+  var elementsInit = []
+  randomEs.forEach(e => {
+    elementsInit.push(Math.random() * 626.82 / 10 + (-240 + 626.82 * e / 10))
+  })
+  console.log(elementsInit)
+  return elementsInit
+}
+function _addTo(dose, elements) {
+  elements[dose[0]] += dose[1]
+  return dose[0]
+}
+function _max(elements) {
+  var max = elements[0]
+  var maxIndex = 0
+  for (var i = 1; i < elements.length; i++) {
+    if (elements[i] > max) {
+      max = elements[i]
+      maxIndex = i
+    }
+  }
+  return maxIndex
+}
+
+export {parserS, parserT}
