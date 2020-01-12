@@ -11,6 +11,14 @@ cc.Class({
     tiles_instance: {
       default: null,
       type: cc.Node
+    },
+    introduce: {
+      default: null,
+      type: cc.Label
+    },
+    section: {
+      default: null,
+      type: cc.Prefab
     }
   },
 
@@ -127,7 +135,27 @@ cc.Class({
       cc.sys.localStorage.setItem('id', id)
       cc.sys.localStorage.setItem('stepAll', this.stepAll)
       var value = tiles[id].getComponent('spaceTemplate').init()
-      parserS(value)
+
+      var options = parserS(value)
+      this.introduce.string = options[0]
+      var sections = []
+      var sectionN = null
+      if (options[1] == 0) {
+        sectionN = cc.instantiate(this.section)
+        sectionN.getComponent(cc.Label).string = '选择。'
+        sectionN.position.y = sectionN.parent.height / 2 - 19 + sectionN.height / 2
+        for (let i = 0; i < 4; i++) {
+          let randomO = Math.floor(Math.random() * options[2].length)
+          sections.push(options[2][randomO])
+          options[2].splice(randomO, 1)
+        }
+        var sectionsP = parserT(sections)
+        for (let i = 0; i < sectionsP.length; i++) {
+          sectionN = cc.instantiate(this.section)
+          sectionN.getComponent(cc.Label).string = sectionsP[i]
+          sectionN.position.y = sectionN.parent.height / 2 - 19 + sectionN.height / 2 + (i + 1) * (sectionN.height + 2)
+        }
+      }
     }
   }
 });

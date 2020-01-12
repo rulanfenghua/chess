@@ -36,7 +36,7 @@ function parserS(dose) {
         if (ratioD >= minP && ratioD < maxP) {
           switch (sections.section[0]) {
             case 0:
-              return [sections.section[1], sections.section.slice(2)]
+              return [sections.section[1], 0, sections.section.slice(2)]
           
             default:
               break;
@@ -48,13 +48,18 @@ function parserS(dose) {
 }
 
 function parserT(params) {
+  params.forEach(trait => {
+    traits.get(trait) // todo 类型解析，总体运算
+  })
+}
+
+function calculateS() {
   
 }
 
 function calculate(elements, maxIndex) {
   return (elements[maxIndex] + elements[(maxIndex + 1) % 5]) - (elements[(maxIndex + 2) % 5] + elements[(maxIndex + 3) % 5] + elements[(maxIndex + 4) % 5])
 }
-
 function truncate(num) {
   var numString = num.toString()
 
