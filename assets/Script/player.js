@@ -19,6 +19,14 @@ cc.Class({
     section: {
       default: null,
       type: cc.Prefab
+    },
+    dialogue: {
+      default: null,
+      type: cc.Node
+    },
+    view: {
+      default: null,
+      type: cc.Node
     }
   },
 
@@ -30,6 +38,7 @@ cc.Class({
     this.step = 0
     this.stepAll = parseInt(cc.sys.localStorage.getItem('stepAll')) ? parseInt(cc.sys.localStorage.getItem('stepAll')) : 0
     this.posTo = cc.v2(0, 0)
+    this.on = false
 
     this.updateN()
     this.tilesThisX = this.conformNode.convertToWorldSpaceAR(this.tiles_instance.position)
@@ -37,16 +46,16 @@ cc.Class({
   },
 
   start() {
-    var id = parseInt(cc.sys.localStorage.getItem('id'))
-    var tiles = this.tiles_instance.children
-    if (id) {
+    if (this.stepAll) {
+      var id = this.stepAll % 64 == 0 && this.stepAll > 0 ? 64 : this.stepAll % 64
+      var tiles = this.tiles_instance.children
+    
       var subPos = this.tiles_instance.convertToWorldSpaceAR(tiles[id].position).x - this.anchor.x
       this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX).sub(cc.v2(subPos, 0))
     }
 
     this.node.on('touchmove', this.move, this)
     this.node.on('touchstart', () => {
-      this.on = true
       this.originX = this.node.x
 
       var tiles = this.tiles_instance.children
@@ -75,6 +84,8 @@ cc.Class({
   },
   updateStep(n) { // 更新记录向前移动
     this.stepAll += n
+    cc.sys.localStorage.setItem('stepAll', this.stepAll)
+
   },
 
   _minTile() {
@@ -94,6 +105,9 @@ cc.Class({
   },
 
   move(event) {
+    if (this.on) {
+      return
+    }
     var delta = event.getDelta()
     if (delta.x > 0) {
       this.node.x = this.node.x + delta.x
@@ -131,20 +145,19 @@ cc.Class({
         this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(this.tilesThisX).sub(cc.v2(subPos, 0))
       }
 
+      this.dialogue.runAction(cc.moveTo(0.4, 0, this.dialogue.y))
+      this.on = true
+
       var id = this.stepAll % 64 == 0 && this.stepAll > 0 ? 64 : this.stepAll % 64
-      cc.sys.localStorage.setItem('id', id)
-      cc.sys.localStorage.setItem('stepAll', this.stepAll)
       var value = tiles[id].getComponent('spaceTemplate').init()
 
       var options = parserS(value)
       this.introduce.string = options[0]
       var sections = []
-      var sectionN = null
+      var sectionN = null // section-node
       if (options[1] == 0) {
-        sectionN = cc.instantiate(this.section)
-        sectionN.getComponent(cc.Label).string = '选择。'
-        sectionN.position.y = sectionN.parent.height / 2 - 19 + sectionN.height / 2
-        for (let i = 0; i < 4; i++) {
+        var numberL = Math.floor(Math.random() * 2) > 0 ? 4 : (Math.floor(Math.random() * 4) > 0 ? 3 : (Math.floor(Math.random() * 2) > 0 ? 2 : 1))
+        for (let i = 0; i < numberL; i++) {
           let randomO = Math.floor(Math.random() * options[2].length)
           sections.push(options[2][randomO])
           options[2].splice(randomO, 1)
@@ -152,8 +165,10 @@ cc.Class({
         var sectionsP = parserT(sections)
         for (let i = 0; i < sectionsP.length; i++) {
           sectionN = cc.instantiate(this.section)
-          sectionN.getComponent(cc.Label).string = sectionsP[i]
-          sectionN.position.y = sectionN.parent.height / 2 - 19 + sectionN.height / 2 + (i + 1) * (sectionN.height + 2)
+          sectionN.getComponent(cc.Label).string = sectionsP[i][1]
+          sectionN.y = this.view.parent.height / 2 - 19 + sectionN.height / 2 + (i + 1) * (sectionN.height + 2)
+          this.view.addChild(sectionN)
+          console.log(sectionN.position)
         }
       }
     }

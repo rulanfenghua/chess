@@ -24,19 +24,17 @@ function parserS(dose) {
     var power = (maxIndex - maxIndexThis) >= 0 ? (maxIndex - maxIndexThis) : 5 + (maxIndex - maxIndexThis)
     var factor = Math.pow(0.56, power)
     deviator = deviator2 + deviator1 * factor
-    var ratioD = deviator / ((elements[0] + elements[1] + elements[2] + elements[3] + elements[4]) / 5)
-    var age = Math.floor(parseInt(cc.sys.localStorage.getItem('stepAll')) / 64)
-
+    var ratioD = _randomLevel(deviator / ((elements[0] + elements[1] + elements[2] + elements[3] + elements[4]) / 5))
+    var age = Math.floor(Math.floor(parseInt(cc.sys.localStorage.getItem('stepAll')) / 12) / 3) + 1
 
     for (let section in sections) {
       var sectionP = section.split(',')
-      var minP = parseFloat(sectionP[1])
-      var maxP = parseFloat(sectionP[2])
+      var levelP = parseInt(sectionP[1])
       if (age == parseInt(sectionP[0].slice(0, 2)) && maxIndexThis == parseInt(sectionP[0].slice(-1))) {
-        if (ratioD >= minP && ratioD < maxP) {
-          switch (sections.section[0]) {
-            case 0:
-              return [sections.section[1], 0, sections.section.slice(2)]
+        if (ratioD == levelP) {
+          switch (sections[section][0]) {
+            case 0: // 选择一个特质
+              return [sections[section][1], 0, sections[section].slice(2)]
           
             default:
               break;
@@ -47,10 +45,20 @@ function parserS(dose) {
   }
 }
 
-function parserT(params) {
+function parserT(params) { // parser-text
+  var texts = []
   params.forEach(trait => {
-    traits.get(trait) // todo 类型解析，总体运算
+    var traitDe = traits.get(trait).split(',')
+    switch (parseInt(traitDe[0])) {
+      case 0: // 一系+百分比
+        texts.push([0, traitDe[1], traitDe[2].split('?')])
+        break;
+      default:
+        break;
+    }
   })
+  console.log(texts)
+  return texts
 }
 
 function calculateS() {
@@ -69,8 +77,6 @@ function truncate(num) {
   randomEs.push(parseInt(numString.slice(-3, -2)))
   randomEs.push(parseInt(numString.slice(-4, -3)))
   randomEs.push(parseInt(numString.slice(-5, -4)))
-  console.log(numString)
-  console.log(randomEs)
 
   var elementsInit = []
   randomEs.forEach(e => {
@@ -93,6 +99,33 @@ function _max(elements) {
     }
   }
   return maxIndex
+}
+function _randomLevel(params) {
+  const min = -3.27
+  const max = 5.27
+  var range = []
+  for (let i = 0; i < 8; i++) {
+    range.push(min + (max - min) / 7 * i)
+  }
+  if (params < range[0]) {
+    return 8
+  } else if (params >= range[0] && params < range[1]) {
+    return 7
+  } else if (params >= range[1] && params < range[2]) {
+    return 6
+  }else if (params >= range[2] && params < range[3]) {
+    return 5
+  } else if (params >= range[3] && params < range[4]) {
+    return 4
+  }else if (params >= range[4] && params < range[5]) {
+    return 3
+  } else if (params >= range[5] && params < range[6]) {
+    return 2
+  }else if (params >= range[6] && params < range[7]) {
+    return 1
+  }else if (params >= range[7]) {
+    return 0
+  }
 }
 
 export {parserS, parserT}
