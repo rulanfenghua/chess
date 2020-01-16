@@ -1,9 +1,9 @@
 import sections from 'DataBase/sections'
 import traits from 'DataBase/traits'
 
-function parserS(dose) {
-  var deviator
-  var elements
+function parserS(dose) { // parser-section 解析等级 dose 传入量值
+  var deviator // 偏量
+  var elements // 五行
 
   if (!dose) {
     if (!JSON.parse(cc.sys.localStorage.getItem('elements'))) {
@@ -15,6 +15,7 @@ function parserS(dose) {
     deviator = calculate(elements, _max(elements))
   } else {
     elements = JSON.parse(cc.sys.localStorage.getItem('elements')).data
+    calculateS(elements)
     var maxIndex = _max(elements)
     var deviator1 = calculate(elements, maxIndex)
 
@@ -33,7 +34,7 @@ function parserS(dose) {
       if (age == parseInt(sectionP[0].slice(0, 2)) && maxIndexThis == parseInt(sectionP[0].slice(-1))) {
         if (ratioD == levelP) {
           switch (sections[section][0]) {
-            case 0: // 选择一个特质
+            case 0: // 选择特质
               return [sections[section][1], 0, sections[section].slice(2)]
           
             default:
@@ -46,23 +47,36 @@ function parserS(dose) {
 }
 
 function parserT(params) { // parser-text
-  var texts = []
+  var traitsPs = [] // traits-parser 解析后的特质
   params.forEach(trait => {
-    var traitDe = traits.get(trait).split(',')
+    console.log('trait', trait)
+    var traitDe = traits.get(trait).split(',') // trait-details
     switch (parseInt(traitDe[0])) {
-      case 0: // 一系+百分比
-        texts.push([0, traitDe[1], traitDe[2].split('?')])
+      case 0: // +百分比
+        traitsPs.push([ 0, trait, traitDe[1], traitDe[2].split('?')])
         break;
       default:
         break;
     }
   })
-  console.log(texts)
-  return texts
+  console.log(traitsPs)
+  return traitsPs
 }
 
-function calculateS() {
+function calculateS(elements) {
+  var traitsSl = []
+  if (cc.sys.localStorage.getItem('traits')) {
+    traitsSl = JSON.parse(cc.sys.localStorage.getItem('traits')).data // traits-select
+  }
+  var traitsPs = parserT(traitsSl)
+  switch (traitsPs[0]) {
+    case 0:
+      elements[traitsPs[3][0]] *= traitsPs[3][1]
+      break;
   
+    default:
+      break;
+  }
 }
 
 function calculate(elements, maxIndex) {

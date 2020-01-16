@@ -103,6 +103,15 @@ cc.Class({
     }
     return min
   },
+  _onEvent(nodeTh) {
+    var clickEventHandler = new cc.Component.EventHandler()
+    clickEventHandler.target = this.node
+    clickEventHandler.component = 'player'
+    clickEventHandler.handler = 'callbackBn'
+
+    var button = nodeTh.getComponent(cc.Button)
+    button.clickEvents.push(clickEventHandler)
+  },
 
   move(event) {
     if (this.on) {
@@ -163,14 +172,31 @@ cc.Class({
           options[2].splice(randomO, 1)
         }
         var sectionsP = parserT(sections)
+        for (let i = 0; i < this.view.children.length - 2;i++) {
+          this.view.children[2 + i].destroy
+        }
         for (let i = 0; i < sectionsP.length; i++) {
           sectionN = cc.instantiate(this.section)
-          sectionN.getComponent(cc.Label).string = sectionsP[i][1]
-          sectionN.y = this.view.parent.height / 2 - 19 + sectionN.height / 2 + (i + 1) * (sectionN.height + 2)
           this.view.addChild(sectionN)
+          sectionN.getComponent(cc.Label).string = sectionsP[i][1] + ',' + sectionsP[i][2]
+          sectionN.y = this.view.height / 2 - 19 - sectionN.height / 2 - i * (sectionN.height + 2)
+          sectionN.getComponent('sectionTemplate').init(sectionsP[i][1])
+          this._onEvent(sectionN)
           console.log(sectionN.position)
         }
       }
     }
+  },
+
+  callbackBn(event) {
+    console.log(event.target.getComponent('sectionTemplate').traitNe)
+    var traits = []
+    if (cc.sys.localStorage.getItem('traits')) {
+      traits = JSON.parse(cc.sys.localStorage.getItem('traits')).data
+    }
+    traits.push(event.target.getComponent('sectionTemplate').traitNe)
+    cc.sys.localStorage.setItem('traits', JSON.stringify({ data: traits }))
+    this.dialogue.runAction(cc.moveTo(0.4, -1280, this.dialogue.y))
+    this.on = false
   }
 });
