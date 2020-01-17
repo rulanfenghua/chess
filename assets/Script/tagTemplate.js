@@ -12,21 +12,7 @@ cc.Class({
   extends: cc.Component,
 
   properties: {
-    // foo: {
-    //     // ATTRIBUTES:
-    //     default: null,        // The default value will be used only when the component attaching
-    //                           // to a node for the first time
-    //     type: cc.SpriteFrame, // optional, default is typeof default
-    //     serializable: true,   // optional, default is true
-    // },
-    // bar: {
-    //     get () {
-    //         return this._bar;
-    //     },
-    //     set (value) {
-    //         this._bar = value;
-    //     }
-    // },
+    padding: 0
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -34,14 +20,13 @@ cc.Class({
   // onLoad () {},
 
   start() {
-    // this.autoMove()
+
   },
 
-  autoMove() {
-    if (this.node.x + this.node.width > this.node.parent.width / 2) {
-      var nodeToX = this.node.parent.width / 2 - this.node.width
-      this.node.runAction(cc.moveTo(0.7, nodeToX, this.node.y))
-    }
+  init(traitName, introduce, date) {
+    this.node.getChildByName('line').getComponent(cc.Label).string = traitName
+    var width = this.node.getChildByName('line').width * traitName.length / 2
+    this.node.width = width + this.padding * 2
   }
 
   // update (dt) {},

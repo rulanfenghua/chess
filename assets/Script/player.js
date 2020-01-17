@@ -27,6 +27,14 @@ cc.Class({
     view: {
       default: null,
       type: cc.Node
+    },
+    tagPrefab: {
+      default: null,
+      type: cc.Prefab
+    },
+    content: {
+      default: null,
+      type: cc.Node
     }
   },
 
@@ -161,40 +169,46 @@ cc.Class({
       var value = tiles[id].getComponent('spaceTemplate').init()
 
       var options = parserS(value)
-      this.introduce.string = options[0]
+      this.introduce.string = options[1]
       var sections = []
       var sectionN = null // section-node
-      if (options[1] == 0) {
+      if (options[0] == 0 || options[0] == 1) {
         var numberL = Math.floor(Math.random() * 2) > 0 ? 4 : (Math.floor(Math.random() * 4) > 0 ? 3 : (Math.floor(Math.random() * 2) > 0 ? 2 : 1))
         for (let i = 0; i < numberL; i++) {
           let randomO = Math.floor(Math.random() * options[2].length)
           sections.push(options[2][randomO])
           options[2].splice(randomO, 1)
         }
-        var sectionsP = parserT(sections)
+        var traitsPs = parserT(sections)
         for (let i = 0; i < this.view.children.length - 2;i++) {
           this.view.children[2 + i].destroy
         }
-        for (let i = 0; i < sectionsP.length; i++) {
+        for (let i = 0; i < traitsPs.length; i++) {
           sectionN = cc.instantiate(this.section)
           this.view.addChild(sectionN)
-          sectionN.getComponent(cc.Label).string = sectionsP[i][1] + ',' + sectionsP[i][2]
+          sectionN.getComponent(cc.Label).string = traitsPs[i][1] + ',' + traitsPs[i][2]
           sectionN.y = this.view.height / 2 - 19 - sectionN.height / 2 - i * (sectionN.height + 2)
-          sectionN.getComponent('sectionTemplate').init(sectionsP[i][1])
+          sectionN.getComponent('sectionTemplate').init(traitsPs[i][3][0], traitsPs[i][1], traitsPs[i][2])
           this._onEvent(sectionN)
-          console.log(sectionN.position)
         }
       }
     }
   },
 
   callbackBn(event) {
-    console.log(event.target.getComponent('sectionTemplate').traitNe)
+    var traitId = event.target.getComponent('sectionTemplate').traitId
+    var traitName = event.target.getComponent('sectionTemplate').traitName
+    var introduce = event.target.getComponent('sectionTemplate').introduce
+    var tagNew = cc.instantiate(this.tagPrefab)
+    tagNew.getComponent('tagTemplate').init(traitName, introduce)
+    var contentC = this.content.children[traitId].getChildByName('content') // content-child
+    contentC.addChild(tagNew)
+    contentC.getComponent('contentMove').autoMove()
     var traits = []
     if (cc.sys.localStorage.getItem('traits')) {
       traits = JSON.parse(cc.sys.localStorage.getItem('traits')).data
     }
-    traits.push(event.target.getComponent('sectionTemplate').traitNe)
+    traits.push(traitName)
     cc.sys.localStorage.setItem('traits', JSON.stringify({ data: traits }))
     this.dialogue.runAction(cc.moveTo(0.4, -1280, this.dialogue.y))
     this.on = false

@@ -35,7 +35,7 @@ function parserS(dose) { // parser-section 解析等级 dose 传入量值
         if (ratioD == levelP) {
           switch (sections[section][0]) {
             case 0: // 选择特质
-              return [sections[section][1], 0, sections[section].slice(2)]
+              return [0, sections[section][1], sections[section].slice(2)]
           
             default:
               break;
@@ -51,32 +51,45 @@ function parserT(params) { // parser-text
   params.forEach(trait => {
     console.log('trait', trait)
     var traitDe = traits.get(trait).split(',') // trait-details
+    console.log('traitDe', traitDe)
     switch (parseInt(traitDe[0])) {
       case 0: // +百分比
-        traitsPs.push([ 0, trait, traitDe[1], traitDe[2].split('?')])
+        traitsPs.push([0, trait, traitDe[1], traitDe[2].split('?')])
+        break;
+      case 1: // +数值
+        traitsPs.push([1, trait, traitDe[1], traitDe[2].split('?')])
         break;
       default:
         break;
     }
   })
-  console.log(traitsPs)
   return traitsPs
 }
 
-function calculateS(elements) {
+function calculateS(elements) { // calculate-sum
   var traitsSl = []
   if (cc.sys.localStorage.getItem('traits')) {
     traitsSl = JSON.parse(cc.sys.localStorage.getItem('traits')).data // traits-select
   }
   var traitsPs = parserT(traitsSl)
+  var sum0 = [] // 1类百分比和
+  var sum1 = [] // 2类数值和
   switch (traitsPs[0]) {
     case 0:
-      elements[traitsPs[3][0]] *= traitsPs[3][1]
+      sum0.push(traitsPs[3])
       break;
-  
+    case 1:
+      sum1.push(traitsPs[3])
+      break;
     default:
       break;
   }
+  sum0.forEach(param => {
+    elements[param[0]] *= param[1]
+  })
+  sum1.forEach(param => {
+    elements[param[0]] += param[1]
+  })
 }
 
 function calculate(elements, maxIndex) {
@@ -96,7 +109,6 @@ function truncate(num) {
   randomEs.forEach(e => {
     elementsInit.push(Math.random() * 626.82 / 10 + (-240 + 626.82 * e / 10))
   })
-  console.log(elementsInit)
   return elementsInit
 }
 function _addTo(dose, elements) {
