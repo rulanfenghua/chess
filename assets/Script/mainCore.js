@@ -51,7 +51,6 @@ function parserT(params) { // parser-text
   params.forEach(trait => {
     console.log('trait', trait)
     var traitDe = traits.get(trait).split(',') // trait-details
-    console.log('traitDe', traitDe)
     switch (parseInt(traitDe[0])) {
       case 0: // +百分比
         traitsPs.push([0, trait, traitDe[1], traitDe[2].split('?')])

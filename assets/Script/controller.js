@@ -46,7 +46,13 @@ cc.Class({
       var contentC = this.content.children[element[3][0]].getChildByName('content')
       contentC.addChild(tagNew)
       var index = contentC.children.length - 1
-      tagNew.x = contentC.children[index - 1].x + contentC.children[index - 1].width / 2 + tagNew.width / 2 + 4
+
+      if (index - 1 < 0) {
+        tagNew.x = tagNew.width / 2 + this.paddingLf
+      } else {
+        tagNew.x = contentC.children[index - 1].x + contentC.children[index - 1].width / 2 + tagNew.width / 2 + 4
+      }
+      
       if (tagNew.x + tagNew.width / 2 + this.paddingRt > contentC.width) {
         contentC.width = tagNew.x + tagNew.width / 2 + this.paddingRt
       }

@@ -203,6 +203,17 @@ cc.Class({
     tagNew.getComponent('tagTemplate').init(traitName, introduce)
     var contentC = this.content.children[traitId].getChildByName('content') // content-child
     contentC.addChild(tagNew)
+    var index = contentC.children.length - 1
+
+    if (index - 1 < 0) {
+      tagNew.x = tagNew.width / 2 + this.paddingLf
+    } else {
+      tagNew.x = contentC.children[index - 1].x + contentC.children[index - 1].width / 2 + tagNew.width / 2 + 4
+    }
+
+    if (tagNew.x + tagNew.width / 2 + this.paddingRt > contentC.width) {
+      contentC.width = tagNew.x + tagNew.width / 2 + this.paddingRt
+    }
     contentC.getComponent('contentMove').autoMove()
     var traits = []
     if (cc.sys.localStorage.getItem('traits')) {
