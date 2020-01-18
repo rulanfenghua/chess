@@ -93,7 +93,7 @@ cc.Class({
     spaceValue.set(61, [2, (32 + 16 + 2 + 1) * NN])
     spaceValue.set(62, [2, (8 + 4) * WL])
     spaceValue.set(63, [1, (16 + 4 + 1) * WL])
-    spaceValue.set(0, [3, (32 + 8 + 2) * WN])
+    spaceValue.set(64, [3, (32 + 8 + 2) * WN])
     this.spaceValue = spaceValue
   },
 

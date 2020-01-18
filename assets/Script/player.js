@@ -1,4 +1,5 @@
 import {parserS, parserT, traitsFilter} from 'mainCore';
+import traits from './DataBase/traits';
 
 cc.Class({
   extends: cc.Component,
@@ -92,7 +93,7 @@ cc.Class({
   },
 
   updateN() { // 更新随机向前的量
-    this.n = Math.floor(Math.random() * 2) > 0 ? 1 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2) > 0 ? 3 : 4))
+    this.n = Math.floor(Math.random() * 2) > 0 ? 2 : (Math.floor(Math.random() * 4) > 0 ? 3 : (Math.floor(Math.random() * 2) > 0 ? 1 : 4))
   },
   updateStep(n) { // 更新记录向前移动
     this.stepAll += n
@@ -169,29 +170,33 @@ cc.Class({
       this.dialogue.runAction(cc.moveTo(0.4, 0, this.dialogue.y))
       this.on = true
 
-      var id = this.stepAll % 64 == 0 && this.stepAll > 0 ? 64 : this.stepAll % 64
+      var id = this.stepAll % 64 == 0 ? 64 : this.stepAll % 64
       var value = tiles[id].getComponent('spaceTemplate').init()
 
       var options = parserS(value)
       this.introduce.string = options[1]
       var sections = []
       var sectionN = null // section-node
-      if (options[0] == 0 || options[0] == 1) {
-        var numberL = Math.floor(Math.random() * 2) > 0 ? 4 : (Math.floor(Math.random() * 4) > 0 ? 3 : (Math.floor(Math.random() * 2) > 0 ? 2 : 1))
-        for (let i = 0; i < numberL; i++) {
-          let randomO = Math.floor(Math.random() * options[2].length)
-          sections.push(options[2][randomO])
-          options[2].splice(randomO, 1)
-        }
-        console.log(sections)
-        var traitsPs = parserT(sections, this.stepAll)
-        for (let i = 0; i < this.view.children.length - 2;i++) {
-          this.view.children[2 + i].destroy
-        }
+
+      var numberL = Math.floor(Math.random() * 2) > 0 ? 3 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2) > 0 ? 1 : 4))
+      for (let i = 0; i < numberL; i++) {
+        let randomO = Math.floor(Math.random() * options[2].length)
+        sections.push(options[2][randomO])
+        options[2].splice(randomO, 1)
+      }
+      var traitsPs = parserT(sections, this.stepAll)
+      for (let i = 0; i < this.view.children.length - 2; i++) {
+        this.view.children[2 + i].destroy()
+      }
+      if (options[0] == 0) {
         for (let i = 0; i < traitsPs.length; i++) {
           sectionN = cc.instantiate(this.section)
           this.view.addChild(sectionN)
-          sectionN.getComponent(cc.Label).string = traitsPs[i][1] + ',' + traitsPs[i][2]
+          if (traitsPs[i][0] == -1) {
+            sectionN.getComponent(cc.Label).string = traitsPs[i][1]
+          } else {
+            sectionN.getComponent(cc.Label).string = traitsPs[i][1] + ',' + traitsPs[i][2]
+          }
           sectionN.y = this.view.height / 2 - 19 - sectionN.height / 2 - i * (sectionN.height + 2)
           sectionN.getComponent('sectionTemplate').init(traitsPs[i][3][0], traitsPs[i][1], traitsPs[i][2], this.stepAll, traitsPs[i][4])
           this._onEvent(sectionN)
@@ -213,7 +218,10 @@ cc.Class({
     if (cc.sys.localStorage.getItem('traits')) {
       traits = JSON.parse(cc.sys.localStorage.getItem('traits')).data
     }
-    traits = traitsFilter(traits.push([traitId, traitName, introduce, date, during]))
+    if (traitName != '继续..') {
+      traits.push([traitId, traitName, introduce, date, during])
+    }
+    traits = traitsFilter(traits)
     this.background.getComponent('controller').contentMoveController(traits)
     cc.sys.localStorage.setItem('traits', JSON.stringify({ data: traits }))
     this.dialogue.runAction(cc.moveTo(0.4, -1280, this.dialogue.y))

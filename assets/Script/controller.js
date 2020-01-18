@@ -43,12 +43,22 @@ cc.Class({
   },
 
   contentMoveController(traits) {
+    var lengthNew = [0, 0, 0, 0, 0]
+    for (let j = 0; j < this.content.children.length; j++) {
+      var contentThis = this.content.children[j].getChildByName('content')
+      for (let i = 0; i < contentThis.children.length; i++) {
+        contentThis.children[i].destroy()
+      }
+      lengthNew[j] = contentThis.children.length
+    }
+
+
     traits.forEach(element => {
       var tagNew = cc.instantiate(this.tagPrefab)
       tagNew.getComponent('tagTemplate').init(element[0], element[1], element[2], element[3], element[4])
       var contentC = this.content.children[element[0]].getChildByName('content')
       contentC.addChild(tagNew)
-      var index = contentC.children.length - 1
+      var index = contentC.children.length - 1 - lengthNew[element[0]]
 
       if (index - 1 < 0) {
         tagNew.x = tagNew.width / 2 + this.paddingLf
