@@ -15,7 +15,9 @@ function parserS(dose) { // parser-section 解析等级 dose 传入量值
     deviator = calculate(elements, _max(elements))
   } else {
     elements = JSON.parse(cc.sys.localStorage.getItem('elements')).data
+    console.log('elements B', elements)
     calculateS(elements)
+    console.log('elements A', elements)
     var maxIndex = _max(elements)
     var deviator1 = calculate(elements, maxIndex)
 
@@ -46,17 +48,29 @@ function parserS(dose) { // parser-section 解析等级 dose 传入量值
   }
 }
 
-function parserT(params) { // parser-text
+function parserT(params, stepAll) { // parser-text
   var traitsPs = [] // traits-parser 解析后的特质
+  var step = 0
+  if (stepAll) {
+    step = stepAll
+  }
   params.forEach(trait => {
-    console.log('trait', trait)
     var traitDe = traits.get(trait).split(',') // trait-details
     switch (parseInt(traitDe[0])) {
       case 0: // +百分比
-        traitsPs.push([0, trait, traitDe[1], traitDe[2].split('?')])
+        traitsPs.push([0, trait, traitDe[1], traitDe[2].split('?'), parseInt(traitDe) ? parseInt(traitDe[3]) + step : 0]) // 状态，名字，解释，计算方式，时间
         break;
       case 1: // +数值
-        traitsPs.push([1, trait, traitDe[1], traitDe[2].split('?')])
+        traitsPs.push([1, trait, traitDe[1], traitDe[2].split('?'), parseInt(traitDe) ? parseInt(traitDe[3]) + step : 0])
+        break;
+      case 2: // +计算和
+        traitsPs.push([2, trait, traitDe[1], parseFloat(traitDe[2]), parseInt(traitDe) ? parseInt(traitDe[3]) + step : 0]) // 状态，名字，解释，数值，时间
+        break;
+      case 3: // +计算比
+        traitsPs.push([3, trait, traitDe[1], parseFloat(traitDe[2]), parseInt(traitDe) ? parseInt(traitDe[3]) + step : 0])
+        break;
+      case 4: // 状态组
+        traitsPs.push([4, trait, traitDe[1].split('?'), traitDe[2].split('?'), parseInt(traitDe[3]), parseInt(traitDe) ? parseInt(traitDe[4]) + step : 0]) // 状态，名字，解释，等级，所在等级，时间
         break;
       default:
         break;
@@ -66,29 +80,52 @@ function parserT(params) { // parser-text
 }
 
 function calculateS(elements) { // calculate-sum
-  var traitsSl = []
+  var traits = []
   if (cc.sys.localStorage.getItem('traits')) {
-    traitsSl = JSON.parse(cc.sys.localStorage.getItem('traits')).data // traits-select
+    traits = JSON.parse(cc.sys.localStorage.getItem('traits')).data // traits-select
+    var traitsSl = []
+    traits.forEach(element => {
+      traitsSl.push(element[1])
+    })
+    var traitsPs = parserT(traitsSl)
+
+    var sum0 = [] // 1类百分比和
+    var sum1 = [] // 2类数值和
+    traitsPs.forEach(trait => {
+      switch (trait[0]) {
+        case 0:
+          sum0.push(trait[3])
+          break;
+        case 1:
+          sum1.push(trait[3])
+          break;
+        default:
+          break;
+      }
+    })
+    
+    let sumPercent = new Array(5)
+    sum0.forEach(param => {
+      sumPercent[parseInt(param[0])] += parseFloat(param[1])
+    })
+    for (let i = 0; i < 5; i++) {
+      elements[i] *= sumPercent[i] / 100
+    }
+    
+    sum1.forEach(param => {
+      elements[parseInt(param[0])] += parseFloat(param[1])
+    })
   }
-  var traitsPs = parserT(traitsSl)
-  var sum0 = [] // 1类百分比和
-  var sum1 = [] // 2类数值和
-  switch (traitsPs[0]) {
-    case 0:
-      sum0.push(traitsPs[3])
-      break;
-    case 1:
-      sum1.push(traitsPs[3])
-      break;
-    default:
-      break;
-  }
-  sum0.forEach(param => {
-    elements[param[0]] *= param[1]
+  
+}
+
+function traitsFilter(traits, stepAll) {
+  var traitsFl = traits.filter(trait => {
+    if (trait[4] != 0 && trait[4] > stepAll) {
+      return false
+    }
   })
-  sum1.forEach(param => {
-    elements[param[0]] += param[1]
-  })
+  return traitsFl
 }
 
 function calculate(elements, maxIndex) {
@@ -153,4 +190,4 @@ function _randomLevel(params) {
   }
 }
 
-export {parserS, parserT}
+export {parserS, parserT, traitsFilter}

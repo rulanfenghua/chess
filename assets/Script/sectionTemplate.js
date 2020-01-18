@@ -37,10 +37,12 @@ cc.Class({
 
   },
 
-  init(traitId, traitName, introduce) {
+  init(traitId, traitName, introduce, date, during) {
     this.traitId = traitId
     this.traitName = traitName
     this.introduce = introduce
+    this.date = date
+    this.during = during
   }
   // update (dt) {},
 });

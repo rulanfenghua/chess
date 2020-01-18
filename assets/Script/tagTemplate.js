@@ -23,7 +23,7 @@ cc.Class({
 
   },
 
-  init(traitName, introduce, date) {
+  init(traitId, traitName, introduce, date, during) {
     this.node.getChildByName('line').getComponent(cc.Label).string = traitName
     var width = this.node.getChildByName('line').width * traitName.length / 2
     this.node.width = width + this.padding * 2

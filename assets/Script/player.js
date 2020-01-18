@@ -1,4 +1,4 @@
-import {parserS, parserT} from 'mainCore';
+import {parserS, parserT, traitsFilter} from 'mainCore';
 
 cc.Class({
   extends: cc.Component,
@@ -33,6 +33,10 @@ cc.Class({
       type: cc.Prefab
     },
     content: {
+      default: null,
+      type: cc.Node
+    },
+    background: {
       default: null,
       type: cc.Node
     }
@@ -179,7 +183,8 @@ cc.Class({
           sections.push(options[2][randomO])
           options[2].splice(randomO, 1)
         }
-        var traitsPs = parserT(sections)
+        console.log(sections)
+        var traitsPs = parserT(sections, this.stepAll)
         for (let i = 0; i < this.view.children.length - 2;i++) {
           this.view.children[2 + i].destroy
         }
@@ -188,7 +193,7 @@ cc.Class({
           this.view.addChild(sectionN)
           sectionN.getComponent(cc.Label).string = traitsPs[i][1] + ',' + traitsPs[i][2]
           sectionN.y = this.view.height / 2 - 19 - sectionN.height / 2 - i * (sectionN.height + 2)
-          sectionN.getComponent('sectionTemplate').init(traitsPs[i][3][0], traitsPs[i][1], traitsPs[i][2])
+          sectionN.getComponent('sectionTemplate').init(traitsPs[i][3][0], traitsPs[i][1], traitsPs[i][2], this.stepAll, traitsPs[i][4])
           this._onEvent(sectionN)
         }
       }
@@ -199,27 +204,17 @@ cc.Class({
     var traitId = event.target.getComponent('sectionTemplate').traitId
     var traitName = event.target.getComponent('sectionTemplate').traitName
     var introduce = event.target.getComponent('sectionTemplate').introduce
+    var date = event.target.getComponent('sectionTemplate').date
+    var during = event.target.getComponent('sectionTemplate').during
     var tagNew = cc.instantiate(this.tagPrefab)
-    tagNew.getComponent('tagTemplate').init(traitName, introduce)
-    var contentC = this.content.children[traitId].getChildByName('content') // content-child
-    contentC.addChild(tagNew)
-    var index = contentC.children.length - 1
-
-    if (index - 1 < 0) {
-      tagNew.x = tagNew.width / 2 + this.paddingLf
-    } else {
-      tagNew.x = contentC.children[index - 1].x + contentC.children[index - 1].width / 2 + tagNew.width / 2 + 4
-    }
-
-    if (tagNew.x + tagNew.width / 2 + this.paddingRt > contentC.width) {
-      contentC.width = tagNew.x + tagNew.width / 2 + this.paddingRt
-    }
-    contentC.getComponent('contentMove').autoMove()
+    tagNew.getComponent('tagTemplate').init(traitId, traitName, introduce, date, during)
+    
     var traits = []
     if (cc.sys.localStorage.getItem('traits')) {
       traits = JSON.parse(cc.sys.localStorage.getItem('traits')).data
     }
-    traits.push(traitName)
+    traits = traitsFilter(traits.push([traitId, traitName, introduce, date, during]))
+    this.background.getComponent('controller').contentMoveController(traits)
     cc.sys.localStorage.setItem('traits', JSON.stringify({ data: traits }))
     this.dialogue.runAction(cc.moveTo(0.4, -1280, this.dialogue.y))
     this.on = false
