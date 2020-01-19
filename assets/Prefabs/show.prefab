@@ -39,9 +39,9 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 165,
-      "g": 148,
-      "b": 105,
+      "r": 140,
+      "g": 114,
+      "b": 114,
       "a": 255
     },
     "_contentSize": {
@@ -194,7 +194,7 @@
     "_spriteFrame": {
       "__uuid__": "0e153c32-2429-47d0-883d-056849d5032d"
     },
-    "_type": 0,
+    "_type": 1,
     "_sizeMode": 0,
     "_fillType": 0,
     "_fillCenter": {

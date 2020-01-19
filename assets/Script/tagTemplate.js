@@ -44,11 +44,14 @@ cc.Class({
   },
 
   showDetails(event) {
-    var positionThis = 
-    this.canvans.convertToNodeSpaceAR(event.getLocation())
+    const positionEvent = event.getLocation()
+    var positionThis = this.canvans.convertToNodeSpaceAR(positionEvent)
     var showIt = cc.instantiate(this.showPrefab)
     this.canvans.addChild(showIt)
     showIt.setPosition(positionThis)
+    if (positionEvent + showIt.width > this.canvans.width / 2) {
+      showIt.anchorX = 1
+    }
     showIt.getChildByName('label').getComponent(cc.Label).string = this.introduce + '\n' + this.date + '\n' + this.during
   },
   end() {

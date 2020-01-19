@@ -173,7 +173,7 @@ cc.Class({
       var value = tiles[id].getComponent('spaceTemplate').init()
 
       var options = parserS(value)
-      this.introduce.string = options[1]
+      this.introduce.string = options[1] + ', '
       options[2] = traitsComingFilter(options[2])
       var sections = []
       var sectionN = null // section-node
@@ -193,9 +193,9 @@ cc.Class({
           sectionN = cc.instantiate(this.section)
           this.view.addChild(sectionN)
           if (traitsPs[i][0] == -1) {
-            sectionN.getComponent(cc.Label).string = traitsPs[i][1]
+            sectionN.getComponent(cc.Label).string = i + ', ' + traitsPs[i][1]
           } else {
-            sectionN.getComponent(cc.Label).string = traitsPs[i][1] + ',' + traitsPs[i][2]
+            sectionN.getComponent(cc.Label).string = i + ', ' + traitsPs[i][1] + ',' + traitsPs[i][2]
           }
           sectionN.y = this.view.height / 2 - 19 - sectionN.height / 2 - i * (sectionN.height + 2)
           sectionN.getComponent('sectionTemplate').init(traitsPs[i][3][0], traitsPs[i][1], traitsPs[i][2], this.stepAll, traitsPs[i][4])
