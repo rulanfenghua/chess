@@ -12,7 +12,11 @@ cc.Class({
   extends: cc.Component,
 
   properties: {
-    padding: 0
+    padding: 0,
+    showPrefab: {
+      default: null,
+      type: cc.Prefab
+    }
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -20,13 +24,35 @@ cc.Class({
   // onLoad () {},
 
   start() {
-
+    this.node.on('touchstart', this.showDetails, this)
+    this.node.on('touchend', this.end, this)
+    this.node.on('touchcancel', this.end, this)
+    // this.node.on('mouseenter', this.showDetails, this)
+    // this.node.on('mouseleave', this.end, this)
   },
 
   init(traitId, traitName, introduce, date, during) {
     this.node.getChildByName('line').getComponent(cc.Label).string = traitName
     var width = this.node.getChildByName('line').width * traitName.length / 2
     this.node.width = width + this.padding * 2
+    this.introduce = introduce
+    this.date = date
+    this.during = during
+  },
+  initCanvans(canvans) {
+    this.canvans = canvans
+  },
+
+  showDetails(event) {
+    var positionThis = 
+    this.canvans.convertToNodeSpaceAR(event.getLocation())
+    var showIt = cc.instantiate(this.showPrefab)
+    this.canvans.addChild(showIt)
+    showIt.setPosition(positionThis)
+    showIt.getChildByName('label').getComponent(cc.Label).string = this.introduce + '\n' + this.date + '\n' + this.during
+  },
+  end() {
+    this.canvans.getChildByName('show').destroy()
   }
 
   // update (dt) {},

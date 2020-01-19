@@ -152,6 +152,24 @@ function traitsFilter(traits, stepAll) {
   })
   return traitsFl
 }
+function traitsComingFilter(params) {
+  var traitsSum = []
+  var traitsSl = []
+  if (cc.sys.localStorage.getItem('traits')) {
+    traitsSum = JSON.parse(cc.sys.localStorage.getItem('traits')).data // traits-select
+    traitsSum.forEach(element => {
+      traitsSl.push(element[1])
+    })
+  }
+
+  var optionsNew = params.filter(param => {
+    if (traitsSl.indexOf(param) != -1) {
+      return false
+    }
+    return true
+  })
+  return optionsNew
+}
 
 function calculate(elements, maxIndex) {
   return (elements[maxIndex] + elements[(maxIndex + 1) % 5]) - (elements[(maxIndex + 2) % 5] + elements[(maxIndex + 3) % 5] + elements[(maxIndex + 4) % 5])
@@ -173,9 +191,7 @@ function truncate(num) {
   return elementsInit
 }
 function _addTo(dose, elements) {
-  var elementsAdd = elements
-  // todo 数组拷贝
-  console.log
+  var elementsAdd = elements.slice(0)
   elementsAdd[dose[0]] += dose[1]
   return elementsAdd
 }
@@ -218,4 +234,4 @@ function _randomLevel(param) {
   }
 }
 
-export {parserS, parserT, traitsFilter}
+export { parserS, parserT, traitsFilter, traitsComingFilter }

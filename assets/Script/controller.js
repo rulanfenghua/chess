@@ -25,7 +25,11 @@ cc.Class({
       type: cc.Prefab
     },
     paddingLf: 0,
-    paddingRt: 0
+    paddingRt: 0,
+    canvans: {
+      default: null,
+      type: cc.Node
+    }
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -56,6 +60,7 @@ cc.Class({
     traits.forEach(element => {
       var tagNew = cc.instantiate(this.tagPrefab)
       tagNew.getComponent('tagTemplate').init(element[0], element[1], element[2], element[3], element[4])
+      tagNew.getComponent('tagTemplate').initCanvans(this.canvans)
       var contentC = this.content.children[element[0]].getChildByName('content')
       contentC.addChild(tagNew)
       var index = contentC.children.length - 1 - lengthNew[element[0]]

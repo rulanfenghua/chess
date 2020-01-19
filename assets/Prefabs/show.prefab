@@ -12,7 +12,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "tag",
+    "_name": "show",
     "_objFlags": 0,
     "_parent": null,
     "_children": [
@@ -39,25 +39,25 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
+      "r": 165,
+      "g": 148,
+      "b": 105,
       "a": 255
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 94,
-      "height": 54
+      "width": 136.28,
+      "height": 80
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
+      "x": 0,
+      "y": 0
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 72,
-      "y": 3,
+      "x": 0,
+      "y": 0,
       "z": 0
     },
     "_scale": {
@@ -83,14 +83,14 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "line",
+    "_name": "label",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
     },
     "_children": [],
     "_active": true,
-    "_level": 5,
+    "_level": 7,
     "_components": [
       {
         "__id__": 3
@@ -102,14 +102,14 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 92,
-      "g": 38,
-      "b": 38,
+      "r": 0,
+      "g": 0,
+      "b": 0,
       "a": 255
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 54.4,
+      "width": 56.28,
       "height": 40
     },
     "_anchorPoint": {
@@ -119,8 +119,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
+      "x": 68.14,
+      "y": 40,
       "z": 0
     },
     "_scale": {
@@ -155,19 +155,19 @@
     "_srcBlendFactor": 1,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "勇敢",
-    "_N$string": "勇敢",
-    "_fontSize": 27.2,
+    "_string": "Label",
+    "_N$string": "Label",
+    "_fontSize": 23,
     "_lineHeight": 40,
     "_enableWrapText": true,
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
     "_batchAsBitmap": false,
-    "_N$horizontalAlign": 1,
+    "_N$horizontalAlign": 0,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
-    "_N$overflow": 0,
+    "_N$overflow": 3,
     "_id": ""
   },
   {
@@ -176,9 +176,9 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "2edff4eb-ebf0-49e7-b762-ddc201a8a336"
+      "__uuid__": "cb9e11f1-2655-40d9-af09-31604f66fc83"
     },
-    "fileId": "bbnxE8SCxFHbAFo6nnKKpP",
+    "fileId": "f9FNR3KD5FYLqGIV5v9UuB",
     "sync": false
   },
   {
@@ -192,7 +192,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "f54cf10b-1209-4dd1-bbf6-2815b448315b"
+      "__uuid__": "0e153c32-2429-47d0-883d-056849d5032d"
     },
     "_type": 0,
     "_sizeMode": 0,
@@ -216,11 +216,11 @@
     "node": {
       "__id__": 1
     },
-    "_enabled": false,
+    "_enabled": true,
     "_layoutSize": {
       "__type__": "cc.Size",
-      "width": 94,
-      "height": 54
+      "width": 136.28,
+      "height": 80
     },
     "_resize": 1,
     "_N$layoutType": 1,
@@ -231,8 +231,8 @@
       "height": 40
     },
     "_N$startAxis": 0,
-    "_N$paddingLeft": 23,
-    "_N$paddingRight": 23,
+    "_N$paddingLeft": 40,
+    "_N$paddingRight": 40,
     "_N$paddingTop": 0,
     "_N$paddingBottom": 0,
     "_N$spacingX": 0,
@@ -243,17 +243,36 @@
     "_id": ""
   },
   {
-    "__type__": "b0f5cB+f4tNjYZk8h/3bO06",
+    "__type__": "cc.Layout",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 1
     },
     "_enabled": true,
-    "padding": 23,
-    "showPrefab": {
-      "__uuid__": "cb9e11f1-2655-40d9-af09-31604f66fc83"
+    "_layoutSize": {
+      "__type__": "cc.Size",
+      "width": 136.28,
+      "height": 80
     },
+    "_resize": 1,
+    "_N$layoutType": 2,
+    "_N$padding": 0,
+    "_N$cellSize": {
+      "__type__": "cc.Size",
+      "width": 40,
+      "height": 40
+    },
+    "_N$startAxis": 0,
+    "_N$paddingLeft": 0,
+    "_N$paddingRight": 0,
+    "_N$paddingTop": 20,
+    "_N$paddingBottom": 20,
+    "_N$spacingX": 0,
+    "_N$spacingY": 0,
+    "_N$verticalDirection": 1,
+    "_N$horizontalDirection": 0,
+    "_N$affectedByScale": false,
     "_id": ""
   },
   {
@@ -262,9 +281,9 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "2edff4eb-ebf0-49e7-b762-ddc201a8a336"
+      "__uuid__": "cb9e11f1-2655-40d9-af09-31604f66fc83"
     },
-    "fileId": "c0bgPjtp5Bmo5lTzwpNzVS",
+    "fileId": "b8bjbN20NHoZVqJbmgbwPm",
     "sync": false
   }
 ]

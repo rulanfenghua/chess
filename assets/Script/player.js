@@ -1,5 +1,4 @@
-import {parserS, parserT, traitsFilter} from 'mainCore';
-import traits from './DataBase/traits';
+import { parserS, parserT, traitsFilter, traitsComingFilter } from 'mainCore';
 
 cc.Class({
   extends: cc.Component,
@@ -175,6 +174,7 @@ cc.Class({
 
       var options = parserS(value)
       this.introduce.string = options[1]
+      options[2] = traitsComingFilter(options[2])
       var sections = []
       var sectionN = null // section-node
 
@@ -211,8 +211,6 @@ cc.Class({
     var introduce = event.target.getComponent('sectionTemplate').introduce
     var date = event.target.getComponent('sectionTemplate').date
     var during = event.target.getComponent('sectionTemplate').during
-    var tagNew = cc.instantiate(this.tagPrefab)
-    tagNew.getComponent('tagTemplate').init(traitId, traitName, introduce, date, during)
     
     var traits = []
     if (cc.sys.localStorage.getItem('traits')) {
