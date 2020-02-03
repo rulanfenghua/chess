@@ -1,12 +1,12 @@
-import sections from 'DataBase/sections'
-import traits from 'DataBase/traits'
+import sections from 'sections'
+import traits from 'traits'
 
 function parserS(dose) { // parser-section 解析等级 dose 传入量值
   var deviator // 偏量
   var elements // 五行
 
   if (!dose) {
-    if (!JSON.parse(cc.sys.localStorage.getItem('elements'))) {
+    if (!cc.sys.localStorage.getItem('elements')) {
       elements = truncate(Date.now())
       cc.sys.localStorage.setItem('elements', JSON.stringify({ data: elements }))
     } else {
@@ -15,11 +15,11 @@ function parserS(dose) { // parser-section 解析等级 dose 传入量值
     deviator = calculate(elements, _max(elements))
   } else {
     elements = JSON.parse(cc.sys.localStorage.getItem('elements')).data
-    console.log('elements B', elements)
+    // console.log('elements B', elements)
     var elementsAdd = _addTo(dose, elements)
     cc.sys.localStorage.setItem('elements', JSON.stringify({ data: elementsAdd }))
     calculateS(elements)
-    console.log('elements A', elements)
+    // console.log('elements A', elements)
 
     var maxIndex = _max(elements)
     var deviator1 = calculate(elements, maxIndex)
@@ -37,8 +37,8 @@ function parserS(dose) { // parser-section 解析等级 dose 传入量值
     for (let section in sections) {
       var sectionP = section.split(',')
       var levelP = parseInt(sectionP[1])
-      if (age == parseInt(sectionP[0].slice(0, 2)) && maxIndexThis == parseInt(sectionP[0].slice(-1))) {
-      // if (maxIndexThis == parseInt(sectionP[0].slice(-1))) {
+      // if (age == parseInt(sectionP[0].slice(0, 2)) && maxIndexThis == parseInt(sectionP[0].slice(-1))) {
+      if (maxIndexThis == parseInt(sectionP[0].slice(-1))) {
         if (ratioD == levelP) {
           switch (sections[section][0]) {
             case 0: // 选择特质
@@ -47,9 +47,10 @@ function parserS(dose) { // parser-section 解析等级 dose 传入量值
               break;
           }
         }
-      } else if (age > 1) {
-        return -1
-      }
+      } 
+      // else if (age > 1) {
+      //   return -1
+      // }
     }
   }
 }
@@ -61,12 +62,13 @@ function parserT(params, stepAll) { // parser-text
     step = stepAll
   }
   params.forEach(trait => {
+    // console.log(trait)
     var traitDe = traits.get(trait).split(',') // trait-details
     // switch (parseInt(traitDe[0])) {
     //   case 0: // +百分比
     //   case 1: // +数值
-    //   case 2: // +计算和
-    //   case 3: { // +计算比
+    //   case 2: // +计算比
+    //   case 3: { // +计算和
     //     traitsPs.push([traitDe[0], trait, traitDe[1], traitDe[2].split('?'), parseInt(traitDe[3]) ? parseInt(traitDe[3]) + step : 0])
     //     // 状态，名字，解释，计算方式，时间
     //     break;
@@ -109,11 +111,12 @@ function calculateS(elements) { // calculate-sum
       traitsSl.push(element[1])
     })
     var traitsPs = parserT(traitsSl)
+    // console.log(traitsPs)
 
     var sum0 = [] // 1类百分比和
     var sum1 = [] // 2类数值和
     traitsPs.forEach(trait => {
-      switch (trait[0]) {
+      switch (parseInt(trait[0])) {
         case 0:
           sum0.push(trait[3])
           break;
@@ -124,6 +127,8 @@ function calculateS(elements) { // calculate-sum
           break;
       }
     })
+    // console.log(sum0)
+    // console.log(sum1)
     if (sum0.length != 0) {
       let sumPercent = [0, 0, 0, 0, 0]
       sum0.forEach(param => {
@@ -136,6 +141,7 @@ function calculateS(elements) { // calculate-sum
     
     if (sum1.length != 0) {
       sum1.forEach(param => {
+        // console.log(elements[parseInt(param[0])])
         elements[parseInt(param[0])] += parseFloat(param[1])
       })
     }
@@ -155,7 +161,7 @@ function calculateA(params) { // calculate-after
     var sum0 = [] // 1类百分比和
     var sum1 = [] // 2类数值和
     traitsPs.forEach(trait => {
-      switch (trait[0]) {
+      switch (parseInt(trait[0])) {
         case 0:
           sum0.push(trait[3])
           break;
@@ -170,14 +176,14 @@ function calculateA(params) { // calculate-after
     if (sum0.length != 0) {
       let sumPercent = 0
       sum0.forEach(e => {
-        sumPercent[parseInt(e[0])] += parseFloat(e[1])
+        sumPercent += parseFloat(e[1])
       })
       params = params + params * sumPercent / 100
     }
 
     if (sum1.length != 0) {
       sum1.forEach(e => {
-        params[parseInt(e[0])] += parseFloat(e[1])
+        params += parseFloat(e[1])
       })
     }
   }
@@ -201,6 +207,8 @@ function traitsComingFilter(params) {
       traitsSl.push(element[5])
     })
   }
+  // console.log(traitsSum)
+  // console.log(params)
   var optionsNew = params.filter(param => {
     if (traitsSl.indexOf(param[5]) != -1) {
       return false

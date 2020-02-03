@@ -1,5 +1,4 @@
 import { parserS, parserT, traitsFilter, traitsComingFilter } from 'mainCore';
-import sections from './DataBase/sections';
 
 cc.Class({
   extends: cc.Component,
@@ -40,6 +39,14 @@ cc.Class({
     background: {
       default: null,
       type: cc.Node
+    },
+    time: {
+      default: null,
+      type: cc.Label
+    },
+    canvans: {
+      default: null,
+      type: cc.Node
     }
   },
 
@@ -50,6 +57,8 @@ cc.Class({
     this.n = 0
     this.step = 0
     this.stepAll = parseInt(cc.sys.localStorage.getItem('stepAll')) ? parseInt(cc.sys.localStorage.getItem('stepAll')) : 0
+    var positionWolrd = this.conformNode.convertToWorldSpaceAR(this.tiles_instance.position)
+    this.tiles_instance.position = this.conformNode.convertToNodeSpaceAR(cc.v2(6, positionWolrd.y))
     this.posTo = cc.v2(0, 0)
     this.on = false
 
@@ -170,6 +179,12 @@ cc.Class({
       var id = this.stepAll % 64 == 0 ? 64 : this.stepAll % 64
       var value = tiles[id].getComponent('spaceTemplate').init()
       
+      var year = 0
+      var mouth = 0
+      year = Math.floor(Math.floor(parseInt(this.stepAll) / 12)) + 1
+      mouth = this.stepAll % 12 + 1
+      this.time.string = year + '年' + mouth + '月'
+
       var options = parserS(value)
       if (options == -1) {
         this.on = true
@@ -177,10 +192,10 @@ cc.Class({
         return
       }
       
-      this.dialogue.runAction(cc.moveTo(0.4, 0, this.dialogue.y))
+      this.dialogue.runAction(cc.moveTo(0.4, this.canvans.width, this.dialogue.y))
       this.on = true
 
-      this.introduce.string = options[1] + ', '
+      this.introduce.string = options[1] + '， '
       var sections = []
       var sectionN = null // section-node
       
@@ -188,11 +203,18 @@ cc.Class({
       traitsPs = traitsComingFilter(traitsPs)
 
       var numberL = Math.floor(Math.random() * 2) > 0 ? 3 : (Math.floor(Math.random() * 4) > 0 ? 2 : (Math.floor(Math.random() * 2) > 0 ? 1 : 4))
-      for (let i = 0; i < numberL; i++) {
-        let randomO = Math.floor(Math.random() * traitsPs.length)
-        sections.push(traitsPs[randomO])
-        traitsPs.splice(randomO, 1)
+      if (traitsPs.length == 0) {
+        sections = parserT(['继续..'], this.stepAll)
+      } else if (numberL < traitsPs.length) {
+        for (let i = 0; i < numberL; i++) {
+          let randomO = Math.floor(Math.random() * traitsPs.length)
+          sections.push(traitsPs[randomO])
+          traitsPs.splice(randomO, 1)
+        }
+      } else {
+        sections = traitsPs
       }
+      // console.log(sections)
 
       for (let i = 0; i < this.view.children.length - 2; i++) {
         this.view.children[2 + i].destroy()
@@ -202,10 +224,11 @@ cc.Class({
           sectionN = cc.instantiate(this.section)
           this.view.addChild(sectionN)
           var j = i + 1
+          // console.log(sections[i][0])
           if (sections[i][0] == -1) {
-            sectionN.getComponent(cc.Label).string = j + ', ' + sections[i][1]
+            sectionN.getComponent(cc.Label).string = j + '， ' + sections[i][1]
           } else {
-            sectionN.getComponent(cc.Label).string = j + ', ' + sections[i][1] + ',' + sections[i][2]
+            sectionN.getComponent(cc.Label).string = j + '， ' + sections[i][1] + '， ' + sections[i][2]
           }
           sectionN.y = this.view.height / 2 - 19 - sectionN.height / 2 - i * (sectionN.height + 2)
           sectionN.getComponent('sectionTemplate').init(sections[i][3][0], sections[i][1], sections[i][2], this.stepAll, sections[i][4], sections[i][5])
@@ -233,7 +256,7 @@ cc.Class({
     traits = traitsFilter(traits)
     this.background.getComponent('controller').contentMoveController(traits)
     cc.sys.localStorage.setItem('traits', JSON.stringify({ data: traits }))
-    this.dialogue.runAction(cc.moveTo(0.4, -1280, this.dialogue.y))
+    this.dialogue.runAction(cc.moveTo(0.4, 0, this.dialogue.y))
     this.on = false
   }
 });

@@ -29,6 +29,10 @@ cc.Class({
     canvans: {
       default: null,
       type: cc.Node
+    },
+    time: {
+      default: null,
+      type: cc.Label
     }
   },
 
@@ -36,6 +40,16 @@ cc.Class({
 
   onLoad() {
     parserS()
+
+    var stepAll = 0
+    if (cc.sys.localStorage.getItem('stepAll')) {
+      stepAll = cc.sys.localStorage.getItem('stepAll')
+    }
+    var year = 0
+    var mouth = 0
+    year = Math.floor(Math.floor(parseInt(stepAll) / 12)) + 1
+    mouth = stepAll % 12 + 1
+    this.time.string = year + '年' + mouth + '月'
   },
 
   start() {
@@ -78,6 +92,10 @@ cc.Class({
     for (let i = 0; i < 5; i++) {
       this.content.children[i].getChildByName('content').getComponent('contentMove').autoMove()
     }
+  },
+
+  backTo() {
+    cc.director.loadScene('start')
   }
 
   // update (dt) {},

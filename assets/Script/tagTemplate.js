@@ -52,7 +52,20 @@ cc.Class({
     if (positionEvent + showIt.width > this.canvans.width / 2) {
       showIt.anchorX = 1
     }
-    showIt.getChildByName('label').getComponent(cc.Label).string = this.introduce + '\n' + this.date + '\n' + this.during
+
+    var year = 0
+    var mouth = 0
+    var year2 = 0
+    var mouth2 = 0
+    year = Math.floor(Math.floor(parseInt(this.date) / 12)) + 1
+    mouth = this.date % 12 + 1
+    if (this.during == 0) {
+      showIt.getChildByName('label').getComponent(cc.Label).string = this.introduce + '\n' + '获得时间：' + year + '年' + mouth + '月'
+    } else {
+      year2 = Math.floor(Math.floor(parseInt(this.during) / 12)) + 1
+      mouth2 = this.during % 12 + 1
+      showIt.getChildByName('label').getComponent(cc.Label).string = this.introduce + '\n' + '获得时间：' + year + '年' + mouth + '月' + '\n' + '持续时间：' + year2 + '年' + mouth2 + '月'
+    }
   },
   end() {
     this.canvans.getChildByName('show').destroy()
